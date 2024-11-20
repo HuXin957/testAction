@@ -12,8 +12,12 @@ jobs:
       - name: Get changed files
         id: changed_files
         run: |
-          files=$(git diff-tree --no-commit-id --name-only -r HEAD)
-          echo "::set-output name=files::$files"
+          changed_files_string=""
+          while IFS= read -r file; do
+            changed_files_string+="$(printf '%s ' "$file")"
+          done < <(git diff --name-only HEAD~1 HEAD)
+          changed_files_string="${changed_files_string%% }"
+          echo "::set-output name=files::$changed_files_string"
       - name: Run a multi-line script to send DingTalk message
         env:
           GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
