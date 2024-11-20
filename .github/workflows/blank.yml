@@ -1,40 +1,18 @@
-name: Get Changed Files as String
-
+name: CI
 on:
   push:
-    branches:
-      - main  # 根据需要修改分支名称
-
+    branches: [ "main" ]
+  workflow_dispatch:
 jobs:
-  list-changed-files:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Get changed files as string
-        id: changed_files_string
+      - name: Run a multi-line script to send DingTalk message
+        env:
+          GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
+          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+          GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          # 初始化一个空字符串来保存文件名
-          changed_files_string=""
-          
-          # 遍历修改的文件，并将它们添加到字符串中
-          # 使用 IFS 来确保文件名之间的分隔符是空格
-          IFS=$'\n' read -d '' -r -a changed_files < <(git diff --name-only --diff-filter=ACMRTUXB origin/main...HEAD)
-          for file in "${changed_files[@]}"; do
-            # 使用 += 来追加字符串，并确保文件名之间有空格
-            if [ -z "$changed_files_string" ]; then
-              changed_files_string="$file"
-            else
-              changed_files_string="$changed_files_string $file"
-            fi
-          done
-          
-          # 输出结果作为环境变量（注意：这里假设文件名中不包含特殊字符，如换行符或引号）
-          echo "::set-output name=files_string::$changed_files_string"
-
-      - name: Print changed files string
-        run: |
-          # 从环境变量中读取拼接后的字符串并打印
-          echo "Changed files (as string):"
-          echo "${{ steps.changed_files_string.outputs.files_string }}"
+          MSG="提交人：$GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME\n提交时间：$(date -d "$GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP" '+%Y-%m-%d %H:%M:%S')\n提交信息：$GITHUB_EVENT_HEAD_COMMIT_MESSAGE\n"
+          echo $MSG
+          curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d "{\"msgtype\": \"text\",\"text\": {\"content\":\"$MSG\"}}"
