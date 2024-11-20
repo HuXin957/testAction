@@ -13,5 +13,8 @@ jobs:
           GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
           GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          MSG="$GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME"
+          MSG="提交人：$GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME\n
+               提交时间：$GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP\n
+               提交信息：$GITHUB_EVENT_HEAD_COMMIT_MESSAGE"
+          echo $MSG
           curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d "{\"msgtype\": \"text\",\"text\": {\"content\":\"$MSG\"}}"
