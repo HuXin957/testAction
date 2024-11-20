@@ -28,4 +28,4 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content":"${{ github.event.head_commit.author.name }}"\n"${{github.event.head_commit.message}}"}}'
+          curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content":"${{ github.event.head_commit.author.name }}\n${{github.event.head_commit.message}}"}}'
