@@ -7,10 +7,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Run a multi-line script
+      - name: Run a multi-line script to send DingTalk message
         env:
-          MSG: "提交人：${{ github.event.head_commit.author.name }}\n
-                提交时间：${{github.event.head_commit.timestamp}}\n
-                提交信息：${{github.event.head_commit.message}}"
+          GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
+          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+          GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content":"${{MSG}}"}}'
+          MSG="$GITHUB_EVENT_HEAD_COMMIT_AUTHOR_NAME"
+          curl 'https://oapi.dingtalk.com/robot/send?access_token=5ad7d229c0ec7a34b3ff0bb6e168e368cbffecf0646bce2d9477434c4b77979e' -H 'Content-Type: application/json' -d "{\"msgtype\": \"text\",\"text\": {\"content\":\"$MSG\"}}"
