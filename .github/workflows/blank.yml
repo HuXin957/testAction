@@ -1,9 +1,9 @@
-name: Get Changed Files
+name: Get Changed Files as String
 
 on:
   push:
     branches:
-      - main  # 你可以根据需要修改这个分支名称
+      - main  # 根据需要修改分支名称
 
 jobs:
   list-changed-files:
@@ -12,19 +12,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get changed files
-        id: changed_files
+      - name: Get changed files as string
+        id: changed_files_string
         run: |
-          # 获取修改的文件列表，并存储为数组
-          changed_files=$(git diff --name-only --diff-filter=ACMRTUXB origin/main...HEAD)
-          
-          # 将文件列表转换为 JSON 数组格式，并输出为环境变量
-          echo "::set-output name=files::$(echo \"$changed_files\" | jq -R . | jq -sRr 'split("\n")[:-1] | map(. | select(. != ""))')"
-
-      - name: Print changed files
-        run: |
-          # 从环境变量中读取文件列表并打印
-          echo "Changed files:"
-          echo "${{ steps.changed_files.outputs.files }}" | jq -r '.[]' | while read -r file; do
-            echo "  $file"
+          # 获取修改的文件列表，并拼接成字符串
+          changed_files_string=""
+          for file in $(git diff --name-only --diff-filter=ACMRTUXB origin/main...HEAD); do
+            changed_files_string+="${file} "
           done
+          
+          # 去除字符串末尾的空格（可选）
+          changed_files_string="${changed_files_string%% }"
+          
+          # 输出结果作为环境变量
+          echo "::set-output name=files_string::$changed_files_string"
+
+      - name: Print changed files string
+        run: |
+          # 从环境变量中读取拼接后的字符串并打印
+          echo "Changed files (as string):"
+          echo "${{ steps.changed_files_string.outputs.files_string }}"
