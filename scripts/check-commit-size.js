@@ -1,9 +1,10 @@
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-console.log(4)
-// 定义最大允许的提交大小，这里设置为 30MB
-const MAX_SIZE = 10 * 1024;
+
+// 定义最大允许的提交大小，这里设置为 10MB
+const MB= 1024 * 1024
+const MAX_SIZE = 10 * MB;
 
 // 获取本次提交的文件列表
 const files = execSync('git diff --cached --name-only --diff-filter=ACM').toString().trim().split('\n');
