@@ -10,10 +10,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^15.4.3"
+    "husky": "^9.1.7"
   },
-  "lint-staged": {
-    "*.{jpg,png,gif}": "node scripts/checkFileSize.js"
+  "husky": {
+    "hooks": {
+      "pre-commit": "node scripts/check-commit-size.js"
+    }
   }
 }
